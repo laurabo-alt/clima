@@ -28,10 +28,7 @@ fetch(urlBusca)
       `&longitude=${longitude}` +
       `&current=temperature_2m,relative_humidity_2m` +
       `,wind_speed_10m,weather_code`;
-  
-
-
-    return fetch(urlClima);
+      return fetch(urlClima);
   })
   .then(resposta => resposta.json())
   .then(dadosClima => {
@@ -52,6 +49,9 @@ fetch(urlBusca)
   .then(dados => {
 
     const resultado = document.getElementById("resultado");
+    const temperatura = dados.temperatura;
+    const umidade = dados.umidade;
+    const vento = dados.vento;
 
 resultado.innerHTML = `
   <div class="card-clima">
@@ -78,9 +78,6 @@ resultado.innerHTML = `
 
     // Por enquanto, apenas observe o JSON
     console.log(dados); 
-    const temperatura = dados.temperatura;
-    const umidade = dados.umidade;
-    const vento = dados.vento;
     
 
   })
