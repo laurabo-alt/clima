@@ -1,3 +1,17 @@
+if ("serviceworker" in navigator) {
+  window.addEventListener("load", () => {
+  navigator.serviceworker
+
+  .register("sw.js")
+  .then(() => {
+    console.log("service worker registrado com sucesso.");
+  })
+  .catch((erro) => {
+  console.error("erro ao registrar o serviço worker:", erro);
+  });
+});
+}
+
 const botaoBuscar = document.getElementById("buscar");
 
 const GEO_URL = "https://geocoding-api.open-meteo.com/v1/search";
