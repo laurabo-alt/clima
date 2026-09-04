@@ -1,102 +1,92 @@
 const botaoBuscar = document.getElementById("buscar");
+
 const GEO_URL = "https://geocoding-api.open-meteo.com/v1/search";
 const CLIMA_URL = "https://api.open-meteo.com/v1/forecast";
 
 botaoBuscar.addEventListener("click", buscar);
+
 function buscar() {
   console.log("O botão foi clicado!");
 
   const campoCidade = document.getElementById("cidade");
-    const cidade = campoCidade.value.trim();
-    console.log("Cidade digitada:", cidade);
-    if (cidade === "") {
-  alert("Digite o nome de uma cidade.");
-  return;
-}
+  const cidade = campoCidade.value.trim();
+
+  console.log("Cidade digitada:", cidade);
+
+  if (cidade === "") {
+    alert("Digite o nome de uma cidade.");
+    return;
+  }
+
+  const resultado = document.getElementById("resultado");
 
   const urlBusca =
-  `${GEO_URL}?name=${encodeURIComponent(cidade)}` +
-  `&count=1&language=pt&format=json`;
-
-fetch(urlBusca)
-  .then(resposta => resposta.json())
-  .then(dadosCidade => {
-    const { latitude, longitude } = dadosCidade.results[0];
-    
-    const urlClima =
-      `${CLIMA_URL}?latitude=${latitude}` +
-      `&longitude=${longitude}` +
-      `&current=temperature_2m,relative_humidity_2m` +
-      `,wind_speed_10m,weather_code`;
-      return fetch(urlClima);
-  })
-  .then(resposta => resposta.json())
-  .then(dadosClima => {
-    console.log(dadosClima);
-  
-  });
+    `${GEO_URL}?name=${encodeURIComponent(cidade)}` +
+    `&count=1&language=pt&format=json`;
 
   fetch(urlBusca)
-  .then(resposta => {
-    // Verifica se o servidor respondeu com sucesso
-    if (!resposta.ok) {
-      throw new Error("Não foi possível consultar a cidade.");
-    }
+    .then(resposta => {
+      if (!resposta.ok) {
+        throw new Error("Não foi possível consultar a cidade.");
+      }
 
-    // Converte o corpo da resposta para JSON
-    return resposta.json();
-  })
-  .then(dados => {
+      return resposta.json();
+    })
 
-    const resultado = document.getElementById("resultado");
-    const temperatura = dados.temperatura;
-    const umidade = dados.umidade;
-    const vento = dados.vento;
+    .then(dadosCidade => {
 
-resultado.innerHTML = `
-  <div class="card-clima">
-    <h2>${cidade}</h2>
+      if (!dadosCidade.results || dadosCidade.results.length === 0) {
+        throw new Error("Cidade não encontrada.");
+      }
 
-    <p>
-      Temperatura:
-      <strong>${temperatura} °C</strong>
-    </p>
+      const { latitude, longitude, name } = dadosCidade.results[0];
 
-    <p>
-      Umidade:
-      <strong>${umidade}%</strong>
-    </p>
+      const urlClima =
+        `${CLIMA_URL}?latitude=${latitude}` +
+        `&longitude=${longitude}` +
+        `&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code`;
 
-    <p>
-      Vento:
-      <strong>${vento} km/h</strong>
+      return fetch(urlClima)
+        .then(resposta => resposta.json())
+        .then(dadosClima => {
 
-    
-    </p>
-  </div>
-`;
+          console.log("Dados do clima:", dadosClima);
 
-    // Por enquanto, apenas observe o JSON
-    console.log(dados); 
-    
+          const temperatura = dadosClima.current.temperature_2m;
+          const umidade = dadosClima.current.relative_humidity_2m;
+          const vento = dadosClima.current.wind_speed_10m;
 
-  })
-  .catch(erro => {
+          resultado.innerHTML = `
+            <div class="card-clima">
+              <h2>${name}</h2>
 
-    console.log(erro);
-    resultado.innerHTML = `
+              <p>
+                Temperatura:
+                <strong>${temperatura} °C</strong>
+              </p>
+
+              <p>
+                Umidade:
+                <strong>${umidade}%</strong>
+              </p>
+
+              <p>
+                Vento:
+                <strong>${vento} km/h</strong>
+              </p>
+            </div>
+          `;
+        });
+    })
+
+    .catch(erro => {
+
+      console.log(erro);
+
+      resultado.innerHTML = `
         <p>
-          Não foi possível consultar 
-                    o clima dessa cidade.
+          Não foi possível consultar o clima dessa cidade.
         </p>
       `;
-
-
-  });
-
-  
-
-
+    });
 }
-
-

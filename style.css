@@ -26,6 +26,7 @@ body{
     display:flex;
     flex-direction: column;
     align-items: center;
+    box-sizing: border-box;
 }
 /* arruma o bloco pincipal*/
 
@@ -37,6 +38,13 @@ h1 {
 p{
     color:#041649;
     margin-bottom:  12px;
+}
+
+input, button{
+    width: 100%;
+    min-height: 44px ;
+    font-size: 16px ;
+    padding:10px 14px ;
 }
 
 input {
@@ -56,11 +64,28 @@ button{
     color:white;
     font-size: 15px;
     cursor: pointer;
+    margin-top: 8px;
 }
 /*arruma a aparência do botão*/
 
 button:hover {
     background: #0767b1;
 
+}
+
+@media (min-width: 600px) {
+    .container{
+        max-width: 480px;
+        margin:0 auto ;
+        padding: 32px;
+    }
+
+    input{
+       width: 70%; 
+    }
+
+    button{
+        width: 28%;
+    }
 }
 
